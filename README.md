@@ -17,7 +17,7 @@ User registration/authorization uses Microsoft Identity.
 
 <h3>Short Modus Operandi</h3>
 
-I created Model classes for the ProductsContext that is connected to the SQL database and Product defining get/set methods and our entry table. In the ProductController, if request are done through the UI, the `GET` method supplies a list of products. While `GET` with and id routes to the Product Form View, either to edit the entry or create new if no id is given(defaults to 0). `POST` & `PUT` also use one method with a conditioner and should not yield any more problems than if they were separated.
+I created Model classes for the ProductsContext that is connected to the SQL database and Product defining get/set methods for column data in our entry table. In the ProductController, if request are done through the UI, the `GET` method supplies a list of products. While `GET` with and id routes to the Product Form View, either to edit the entry or create new if no id is given(defaults to 0). `POST` & `PUT` also use one method with a conditioner and should not yield any more problems than if they were separated.
 The endpoint methods are separated for individual requests and in practice would be used to i.e. supply a JSON object to parties with valid tokens.
 
 To not overcomplicate I chose to edit the `HTML` stored in the Product as a string. This can be further developet to either predefine tags for controlled content or create an advanced editor. The latter, of course, boasts a larger ability to customize the entry.
