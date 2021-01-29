@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CRUDtest.Models;
-using Microsoft.AspNetCore.Identity;
 
 namespace CRUDtest.Controllers
 {
@@ -25,7 +22,7 @@ namespace CRUDtest.Controllers
             return View(await _context.Product.ToListAsync());
         }
 
-        // GET: Product/Create
+        // GET: Product/AddOrEdit
         public IActionResult AddOrEdit(int id = 0)
         {
             if (id == 0)
@@ -38,9 +35,7 @@ namespace CRUDtest.Controllers
             }
         }
 
-        // POST: Product/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Product/AddOrEdit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddOrEdit([Bind("Id,Html,Created")] Product product)
@@ -48,7 +43,7 @@ namespace CRUDtest.Controllers
             if (ModelState.IsValid)
             {
                 product.Created = System.DateTime.Now;
-                product.User = User.Identity.Name ?? "Third party";
+                product.User = User.Identity.Name;
 
                 if (product.Id == 0)
                 {
@@ -65,7 +60,7 @@ namespace CRUDtest.Controllers
             return View(product);
         }
 
-        // GET: Product/Delete/5
+        // GET: Product/Delete
         public async Task<IActionResult> Delete(int? id)
         {
             var product = await _context.Product.FindAsync(id);
@@ -75,8 +70,7 @@ namespace CRUDtest.Controllers
         }
 
         // GET: api/Products
-        [HttpGet]
-        [Route("api/products")]
+        [HttpGet("api/products")]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
             var products = _context.Product.AsQueryable();
@@ -84,8 +78,7 @@ namespace CRUDtest.Controllers
         }
 
         // GET: api/Products/{id}
-        [HttpGet]
-        [Route("api/products/{id}")]
+        [HttpGet("api/products/{id}")]
         public async Task<ActionResult<Product>> GetProducts(int id)
         {
             var products = await _context.Product.FindAsync(id);
@@ -96,6 +89,71 @@ namespace CRUDtest.Controllers
             }
 
             return products;
+        }
+
+        // POST: api/products
+        [HttpPost("api/products")]
+        public async Task<ActionResult<Product>> PostProducts(Product product)
+        {
+            product.Created = System.DateTime.Now;
+            product.User = "api";
+            _context.Product.Add(product);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetProducts", new { id = product.Id }, product);
+        }
+
+        // PUT: api/Products/{id}
+        [HttpPut("api/products/{id}")]
+        public async Task<IActionResult> PutProducts(int id, Product product)
+        {
+            product.Created = System.DateTime.Now;
+            product.User = "api";
+            if (id != product.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Product.Update(product);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProductExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // DELETE: api/products/{id}
+        [HttpDelete("api/products/{id}")]
+        public async Task<ActionResult<Product>> DeleteProducts(int id)
+        {
+            var products = await _context.Product.FindAsync(id);
+            if (products == null)
+            {
+                return NotFound();
+            }
+
+            _context.Product.Remove(products);
+            await _context.SaveChangesAsync();
+
+            return products;
+        }
+
+        private bool ProductExists(int id)
+        {
+            return _context.Product.Any(e => e.Id == id);
         }
     }
 }

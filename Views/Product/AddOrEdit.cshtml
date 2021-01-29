@@ -1,24 +1,32 @@
 ﻿@model CRUDtest.Models.Product
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create/Edit";
 }
 
-<h4>Product Form</h4>
+<h4>Entry Form</h4>
 <hr />
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-10">
         <form asp-action="AddOrEdit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id"/>
-            <div class="form-group">
-                <label asp-for="Html" class="control-label"></label>
-                <textarea asp-for="Html" class="form-control">
-                </textarea>
-                <span asp-validation-for="Html" class="text-danger"></span>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-row">
+                <div class="form-group" style="width: 47%">
+                    <label asp-for="Html" class="control-label"></label>
+                    <textarea id="htmlText" asp-for="Html" class="form-control" style="min-height: 4rem; height: 10rem">
+                    </textarea>
+                    <span asp-validation-for="Html" class="text-danger"></span>
+                </div>
+                <div style="width: 50%; margin-left: 3%">
+                    <p>Preview</p>
+                    <div id="htmlTextPreview" style="word-break: break-all; width: 100%">
+
+                    </div>
+                </div>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input id="submitButton" type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -30,4 +38,23 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+        const htmlText = document.getElementById('htmlText');
+        const htmlTextPreview = document.getElementById('htmlTextPreview');
+        const submitButton = document.getElementById('submitButton');
+
+        htmlTextPreview.innerHTML = htmlText.value;
+
+        htmlText.addEventListener("keydown", onHtmlTextChange);
+        htmlText.addEventListener("keyup", onHtmlTextChange);
+
+        function onHtmlTextChange(event) {
+            htmlTextPreview.innerHTML = event.target.value;
+        }
+
+        submitButton.addEventListener("click", () => {
+            htmlText.removeEventListener("keydown", onHtmlTextChange);
+            htmlText.removeEventListener("keyup", onHtmlTextChange);
+        }, { once: true });
+    </script>
 }

@@ -1,5 +1,3 @@
-using System;
-
 namespace CRUDtest.Models
 {
     public class ErrorViewModel
