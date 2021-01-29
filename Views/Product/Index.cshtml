@@ -1,0 +1,56 @@
+﻿@model IEnumerable<CRUDtest.Models.Product>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h4>Product Register</h4>
+<hr />
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Html)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Created)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th>
+                <a asp-action="AddOrEdit" class="btn btn-outline-dark">Add Entry</a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+
+                @Html.Raw(item.Html)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Created)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User)
+            </td>
+            <td>
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <span>
+                        <a asp-action="AddOrEdit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id" onclick="return confirm('Delete entry?')">Delete</a>
+                    </span>
+                }
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
